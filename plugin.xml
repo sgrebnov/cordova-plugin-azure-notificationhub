@@ -9,14 +9,30 @@ xmlns:android="http://schemas.android.com/apk/res/android"
     <description>Cordova Azure Notification Hub Plugin</description>
     <license>Apache 2.0</license>
     <keywords>cordova, azure, push, notifications, hub</keywords>
-    <repo>TODO</repo>
-    <issue>TODO</issue>
+    <repo>https://github.com/sgrebnov/cordova-plugin-azure-notificationhub</repo>
+    <issue>https://github.com/sgrebnov/cordova-plugin-azure-notificationhub/issues</issue>
     
     <js-module src="www/Promise.js" name="Promise"/>
 
     <js-module src="www/NotificationHub.js" name="NotificationHub">
         <clobbers target="WindowsAzure.Messaging.NotificationHub" />
     </js-module>
+
+    <!-- Windows Phone -->
+    <platform name="wp8">
+        <config-file target="config.xml" parent="/*">
+            <feature name="NotificationHub">
+                <param name="wp-package" value="NotificationHub"/>
+            </feature>
+        </config-file>
+
+        <config-file target="Properties/WMAppManifest.xml" parent="/Deployment/App/Capabilities">
+            <Capability Name="ID_CAP_PUSH_NOTIFICATION"/>
+        </config-file>
+
+        <framework src="src/wp/Microsoft.WindowsAzure.Messaging.dll" custom="true"/>
+        <source-file src="src/wp/NotificationHub.cs" />
+    </platform>
 
     <!-- windows8 -->
     <platform name="windows8">
