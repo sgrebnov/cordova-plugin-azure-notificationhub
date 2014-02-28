@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+xmlns:android="http://schemas.android.com/apk/res/android"
+           id="msopentech.azure.NotificationHub"
+      version="0.0.1">
+    <name>Azure Notification Hub</name>
+
+    <description>Cordova Azure Notification Hub Plugin</description>
+    <license>Apache 2.0</license>
+    <keywords>cordova, azure, push, notifications, hub</keywords>
+    <repo>TODO</repo>
+    <issue>TODO</issue>
+    
+    <js-module src="www/Promise.js" name="Promise"/>
+
+    <js-module src="www/NotificationHub.js" name="NotificationHub">
+        <clobbers target="WindowsAzure.Messaging.NotificationHub" />
+    </js-module>
+
+    <!-- windows8 -->
+    <platform name="windows8">
+        <framework src="src/windows8/Microsoft.WindowsAzure.Messaging.Managed.dll" custom="true"/>
+        <framework src="src/windows8/NotificationHubRuntimeProxy.winmd" custom="true"/>
+        <js-module src="src/windows8/NotificationHubProxy.js" name="NotificationHubProxy" >
+            <clobbers target="" />
+        </js-module>
+    </platform>
+</plugin>
