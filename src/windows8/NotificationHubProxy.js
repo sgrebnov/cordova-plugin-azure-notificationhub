@@ -30,13 +30,13 @@ module.exports = {
             Windows.Networking.PushNotifications.PushNotificationChannelManager.createPushNotificationChannelForApplicationAsync().then(function (channel) {
                 notificationChannel = channel;
                 return (new NotificationHubRuntimeProxy.HubApi()).registerNativeAsync(notificationHubPath, connectionString, channel.uri);
-            }).done(function (result) {                   
-                var registration = {};
-                registration.registrationId = result;
-                registration.channelUri = notificationChannel.uri;
-                registration.notificationHubPath = notificationHubPath;
+            }).done(function (result) {
+                var regInfo = {};
+                regInfo.registrationId = result;
+                regInfo.channelUri = notificationChannel.uri;
+                regInfo.notificationHubPath = notificationHubPath;
 
-                success(registration);
+                success(regInfo);
             }, fail);
 
         } catch (ex) {

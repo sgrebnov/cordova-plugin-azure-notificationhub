@@ -22,7 +22,13 @@
 var exec = require('cordova/exec');
 var Promise = require('./Promise');
 
-// http://msdn.microsoft.com/en-us/library/microsoft.windowsazure.messaging.notificationhub.notificationhub.aspx
+/**
+ * Initializes a new instance of the NotificationHub class.
+ * http://msdn.microsoft.com/en-us/library/microsoft.windowsazure.messaging.notificationhub.notificationhub.aspx
+ *
+ * @param {string} notificationHubPath The notification hub path (name).
+ * @param {string} connectionString The connection string.
+ */
 var NotificationHub = function (notificationHubPath, connectionString) {
     if (typeof notificationHubPath == 'undefined') {
         throw new Error('Please specify notificationHubPath');
@@ -37,8 +43,12 @@ var NotificationHub = function (notificationHubPath, connectionString) {
     this.onPushNotificationReceived = null;
 };
 
-// tags - optional
-// http://msdn.microsoft.com/en-us/library/microsoft.windowsazure.messaging.notificationhub.registerasync.aspx
+/**
+ * Asynchronously registers the device for native notifications.
+ * http://msdn.microsoft.com/en-us/library/dn339332.aspx
+ *
+ * @param {Array} tags The tags (not supported currently).
+ */
 NotificationHub.prototype.registerApplicationAsync = function (tags) {
     var deferral = new Promise.Deferral(),
 
@@ -65,6 +75,10 @@ NotificationHub.prototype.registerApplicationAsync = function (tags) {
     return deferral.promise;
 }
 
+/**
+ * Asynchronously unregisters the native registration on the application or secondary tiles.
+ * http://msdn.microsoft.com/en-us/library/microsoft.windowsazure.messaging.notificationhub.unregisternativeasync.aspx
+ */
 NotificationHub.prototype.unregisterApplicationAsync = function ()
 {
     var deferral = new Promise.Deferral(),
