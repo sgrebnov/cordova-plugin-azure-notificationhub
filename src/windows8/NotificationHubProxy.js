@@ -24,11 +24,34 @@ module.exports = {
             var notificationHubPath = args[0];
             var connectionString = args[1];
             var pushNotificationCallback = window[args[2]];
+            var pushNotificationHandler = function (e) {
+                var notification = null;
+                try {
+                    var notificationType = Windows.Networking.PushNotifications.PushNotificationType;
+                    switch (e.notificationType) {
+                        case notificationType.toast:
+                            notification = e.toastNotification.content;
+                            notification.notificationTypeName = "Toast";
+                            break;
+                        case notificationType.tile:
+                            notification = e.tileNotification.content;
+                            notification.notificationTypeName = "Tile";
+                            break;
+                        case notificationType.badge:
+                            notification = e.badgeNotification.content;
+                            notification.notificationTypeName = "Badge";
+                            break;
+                    }
+                    pushNotificationCallback(notification);
+                } catch (ex) {}
+                e.cancel = true;
+            }
 
             var notificationChannel = null;
 
             Windows.Networking.PushNotifications.PushNotificationChannelManager.createPushNotificationChannelForApplicationAsync().then(function (channel) {
                 notificationChannel = channel;
+                notificationChannel.addEventListener('pushnotificationreceived', pushNotificationHandler);
                 return (new NotificationHubRuntimeProxy.HubApi()).registerNativeAsync(notificationHubPath, connectionString, channel.uri);
             }).done(function (result) {
                 var regInfo = {};
