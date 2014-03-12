@@ -28,8 +28,9 @@ var Promise = require('./Promise');
  *
  * @param {string} notificationHubPath The notification hub path (name).
  * @param {string} connectionString The connection string.
+ * @param {string} options Platform specific additional parameters (optional).
  */
-var NotificationHub = function (notificationHubPath, connectionString) {
+var NotificationHub = function (notificationHubPath, connectionString, options) {
     if (typeof notificationHubPath == 'undefined') {
         throw new Error('Please specify notificationHubPath');
     }
@@ -39,6 +40,7 @@ var NotificationHub = function (notificationHubPath, connectionString) {
     }
     this.notificationHubPath = notificationHubPath;
     this.connectionString = connectionString;
+    this.options = options;
 
     this.onPushNotificationReceived = null;
 };
@@ -50,16 +52,6 @@ var NotificationHub = function (notificationHubPath, connectionString) {
  * @param {Array} tags The tags (not supported currently).
  */
 NotificationHub.prototype.registerApplicationAsync = function (tags) {
-    var deferral = new Promise.Deferral(),
-
-        successCallback = function (result) {
-            deferral.resolve(result);
-        },
-
-        errorCallback = function (err) {
-            deferral.reject(err);
-        };
-    
     var me = this,
         globalNotificationHandlerName = 'NotificationHub_onNotificationReceivedGlobal';
     // global handler that will be called every time new notification is received
@@ -68,9 +60,25 @@ NotificationHub.prototype.registerApplicationAsync = function (tags) {
         if (me.onPushNotificationReceived != null) {
             me.onPushNotificationReceived(msg)
         }
-    }
+    };
+    
+    var deferral = new Promise.Deferral(),
 
-    exec(successCallback, errorCallback, 'NotificationHub', 'registerApplication', [this.notificationHubPath, this.connectionString, globalNotificationHandlerName, tags]);
+    successCallback = function (result) {
+    	// registration completeness callback
+    	if (result && result.event == 'registerApplication') {
+        	delete result.event; // not required
+        	deferral.resolve(result);
+        } else { //push notification
+    		    window[globalNotificationHandlerName](result);
+        }
+    },
+
+    errorCallback = function (err) {
+        deferral.reject(err);
+    };
+
+    exec(successCallback, errorCallback, 'NotificationHub', 'registerApplication', [this.notificationHubPath, this.connectionString, globalNotificationHandlerName, tags, this.options]);
 
     return deferral.promise;
 }

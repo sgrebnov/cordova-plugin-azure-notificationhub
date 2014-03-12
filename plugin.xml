@@ -42,4 +42,36 @@ xmlns:android="http://schemas.android.com/apk/res/android"
             <clobbers target="" />
         </js-module>
     </platform>
+
+    <!-- android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="NotificationHub">
+                <param name="android-package" value="msopentech.azure.NotificationHub" />
+            </feature>
+        </config-file>
+        
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <permission android:name="$PACKAGE_NAME.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+            <uses-permission android:name="$PACKAGE_NAME.permission.C2D_MESSAGE" /> 
+            <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+            <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+            <uses-permission android:name="android.permission.WAKE_LOCK" />
+        </config-file>
+        
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <receiver android:name="msopentech.azure.NotificationHub$PushNotificationReceiver"
+                android:permission="com.google.android.c2dm.permission.SEND">
+                <intent-filter>
+                    <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                    <category android:name="$PACKAGE_NAME" />
+                </intent-filter>
+            </receiver>
+        </config-file>
+
+        <source-file src="src/android/NotificationHub.java" target-dir="src/msopentech/azure" />
+
+        <lib-file src="src/android/google-play-services.jar" />
+        <lib-file src="src/android/notification-hubs-0.1.jar" />
+    </platform>
 </plugin>
