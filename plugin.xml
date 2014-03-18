@@ -74,4 +74,15 @@ xmlns:android="http://schemas.android.com/apk/res/android"
         <lib-file src="src/android/google-play-services.jar" />
         <lib-file src="src/android/notification-hubs-0.1.jar" />
     </platform>
+        <!-- ios -->
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="NotificationHub">
+                <param name="ios-package" value="NotificationHub" />
+            </feature>
+        </config-file>
+        <header-file src="src/ios/NotificationHub.h" />
+        <source-file src="src/ios/NotificationHub.m" />
+        <framework src="src/ios/WindowsAzureMessaging.framework" custom="true" />
+    </platform>
 </plugin>
