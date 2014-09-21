@@ -1,4 +1,4 @@
-﻿/*
+/*
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements. See the NOTICE file
  distributed with this work for additional information
@@ -34,6 +34,7 @@
 - (void)didRegisterForRemoteNotificationsWithDeviceToken:(NSNotification *)notif;
 - (void)didFailToRegisterForRemoteNotificationsWithError:(NSNotification *)notif;
 - (void)didReceiveRemoteNotification:(NSNotification *)notif;
+- (void)didRegisterUserNotificationSettings:(NSNotification *)notif;
 
 @end
 

@@ -35,9 +35,6 @@
                                              selector:@selector(didReceiveRemoteNotification:)
                                                  name:@"UIApplicationDidReceiveRemoteNotification" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(didRegisterForRemoteNotificationsWithDeviceTokenCordova:)
-                                                 name:CDVRemoteNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didRegisterUserNotificationSettings:)
                                                  name:CDVRemoteNotification object:nil];
 }
@@ -116,7 +113,7 @@
     if (self.connectionString == nil || self.notificationHubPath == nil) return;
     
     NSString *channelUri  = notif.object;
-    NSString *deviceToken  = [channelUri dataUsingEncoding:NSUTF8StringEncoding];
+    NSData *deviceToken  = [channelUri dataUsingEncoding:NSUTF8StringEncoding];
     
     SBNotificationHub* hub = [[SBNotificationHub alloc] initWithConnectionString:
                               self.connectionString notificationHubPath:self.notificationHubPath];
