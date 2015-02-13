@@ -37,6 +37,11 @@ On iOS the following code must be manually added to AppDelegate.m in order to ha
 {
     [[NSNotificationCenter defaultCenter] postNotificationName:@"UIApplicationDidReceiveRemoteNotification" object:userInfo];
 }
+
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"UIApplicationDidRegisterUserNotificationSettings" object:notificationSettings];
+}
 ~~~~
 ### Copyrights ###
 Licensed under the Apache License, Version 2.0 (the "License");

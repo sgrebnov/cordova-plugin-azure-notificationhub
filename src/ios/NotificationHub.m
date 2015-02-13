@@ -1,4 +1,4 @@
-﻿/*
+/*
  Licensed to the Apache Software Foundation (ASF) under one
  or more contributor license agreements. See the NOTICE file
  distributed with this work for additional information
@@ -34,6 +34,9 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(didReceiveRemoteNotification:)
                                                  name:@"UIApplicationDidReceiveRemoteNotification" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(didRegisterUserNotificationSettings:)
+                                                 name:CDVRemoteNotification object:nil];
 }
 
 - (void)registerApplication:(CDVInvokedUrlCommand*)command
@@ -43,7 +46,12 @@
     
     self.callbackId = command.callbackId;
     
-    [[UIApplication sharedApplication] registerForRemoteNotificationTypes: UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound];
+    if (IsAtLeastiOSVersion(@"8.0")) {
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert) categories:nil];
+        [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+    } else {
+        [[UIApplication sharedApplication] registerForRemoteNotificationTypes: UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound];
+    }
     
 }
 
@@ -65,6 +73,10 @@
     }];
     
 }
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+{
+    [[UIApplication sharedApplication] registerForRemoteNotifications];
+}
 
 - (void) didRegisterForRemoteNotificationsWithDeviceToken:(NSNotification *)notif
 {
@@ -85,6 +97,33 @@
         NSString *channelUri = [[deviceToken description] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]];
         channelUri = [channelUri stringByReplacingOccurrencesOfString:@" " withString:@""];
         
+        // create callback argument
+        NSMutableDictionary* registration = [NSMutableDictionary dictionaryWithCapacity:4];
+        [registration setObject:@"registerApplication" forKey:@"event"];
+        [registration setObject:channelUri forKey:@"registrationId"]; // TODO: find the way to report registrationId
+        [registration setObject:channelUri forKey:@"channelUri"];
+        [registration setObject:self.notificationHubPath forKey:@"notificationHubPath"];
+        
+        [self reportResult: registration keepCallback:[NSNumber numberWithInteger: TRUE]];
+    }];
+}
+
+- (void) didRegisterForRemoteNotificationsWithDeviceTokenCordova:(NSNotification *)notif
+{
+    if (self.connectionString == nil || self.notificationHubPath == nil) return;
+    
+    NSString *channelUri  = notif.object;
+    NSData *deviceToken  = [channelUri dataUsingEncoding:NSUTF8StringEncoding];
+    
+    SBNotificationHub* hub = [[SBNotificationHub alloc] initWithConnectionString:
+                              self.connectionString notificationHubPath:self.notificationHubPath];
+
+    [hub registerNativeWithDeviceToken:deviceToken tags:nil completion:^(NSError* error) {
+        if (error != nil) {
+            [self failWithError:error];
+            return;
+        }
+                
         // create callback argument
         NSMutableDictionary* registration = [NSMutableDictionary dictionaryWithCapacity:4];
         [registration setObject:@"registerApplication" forKey:@"event"];
