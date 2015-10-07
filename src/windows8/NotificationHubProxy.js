@@ -58,6 +58,7 @@ module.exports = {
                 regInfo.registrationId = result;
                 regInfo.channelUri = notificationChannel.uri;
                 regInfo.notificationHubPath = notificationHubPath;
+                regInfo.event = 'registerApplication';
 
                 success(regInfo);
             }, fail);
@@ -83,4 +84,4 @@ module.exports = {
 
 }
 
-require("cordova/windows8/commandProxy").add("NotificationHub", module.exports);
+require("cordova/exec/proxy").add("NotificationHub", module.exports);
